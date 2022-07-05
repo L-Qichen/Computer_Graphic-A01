@@ -15,20 +15,49 @@
 
 #include <glm/glm.hpp> // GLM is an optimized math library with syntax to similar to OpenGL Shading Language
 
+#include "shader.h"
+
+using namespace glm;
+using namespace std;
+
+// Reads a file
+std::string readFile(const char *filePath)
+{
+    std::string content;
+    std::ifstream fileStream(filePath, std::ios::in);
+
+    if (!fileStream.is_open())
+    {
+        std::cerr << "Could not read file " << filePath << ". File does not exist." << std::endl;
+        return "";
+    }
+
+    std::string line = "";
+    while (!fileStream.eof())
+    {
+        std::getline(fileStream, line);
+        content.append(line + "\n");
+    }
+
+    fileStream.close();
+    return content;
+}
+
 const char *getVertexShaderSource()
 {
     // TODO - Insert Vertex Shaders here ...
     // For now, you use a string for your shader code, in the assignment, shaders will be stored in .glsl files
 
-    return "#version 330 core\n"
-           "layout (location = 0) in vec3 aPos;"
-           "layout (location = 1) in vec3 aColor;"
-           "out vec3 vertexColor;"
-           "void main()"
-           "{"
-           "   vertexColor = aColor;"
-           "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);"
-           "}";
+    // return "#version 330 core\n"
+    //        "layout (location = 0) in vec3 aPos;"
+    //        "layout (location = 1) in vec3 aColor;"
+    //        "out vec3 vertexColor;"
+    //        "void main()"
+    //        "{"
+    //        "   vertexColor = aColor;"
+    //        "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);"
+    //        "}";
+    return readFile("vertexshader.glsl");
 }
 
 const char *getFragmentShaderSource()
@@ -42,6 +71,9 @@ const char *getFragmentShaderSource()
            "   FragColor = vec4(vertexColor.r, vertexColor.g, vertexColor.b, 1.0f);"
            "}";
 }
+
+// // read vertex shader and fragment shader files
+// Shader myShader("/Users/toby/Desktop/comp371-A1/code/src/vertexshader.glsl", "/Users/toby/Desktop/comp371-A1/code/src/fragmentshader.glsl");
 
 int compileAndLinkShaders()
 {
@@ -165,7 +197,7 @@ int main(int argc, char *argv[])
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
     // Create Window and rendering context using GLFW, resolution is 800x600
-    GLFWwindow *window = glfwCreateWindow(800, 600, "Comp371 - Lab 01", NULL, NULL);
+    GLFWwindow *window = glfwCreateWindow(800, 600, "Comp371 - Assignment 01", NULL, NULL);
     if (window == NULL)
     {
         std::cerr << "Failed to create GLFW window" << std::endl;
@@ -199,6 +231,7 @@ int main(int argc, char *argv[])
         glClear(GL_COLOR_BUFFER_BIT);
 
         // TODO - draw rainbow triangle
+        // myShader.use();
         glUseProgram(shaderProgram);
         glBindVertexArray(vao);
         glDrawArrays(GL_TRIANGLES, 0, 3); // 3 vertices, starting at index 0
